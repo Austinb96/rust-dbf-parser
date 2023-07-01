@@ -1,0 +1,8 @@
+/target
+config.toml
+data/*
+output/*
+
+#vscode ignores
+.vscode/*
+```
