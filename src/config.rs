@@ -9,11 +9,12 @@ pub struct Config {
     pub parse_to_csv: bool,
     pub from_path: String,
     pub output_path: String,
+    pub upload_to_google_sheets: bool,
+    pub google_sheet_id: String,
 }
 
 pub fn read_config() -> Result<Config, Box<dyn Error>> {
     let contents = fs::read_to_string("config.toml")?;
     let config = toml::from_str(&contents)?;
-    println!("{:?}", config);
     Ok(config)
 }
