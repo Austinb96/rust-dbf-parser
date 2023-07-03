@@ -10,7 +10,14 @@ pub struct Config {
     pub from_path: String,
     pub output_path: String,
     pub upload_to_google_sheets: bool,
-    pub google_sheet_id: String,
+    pub sheet : GSheet,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct GSheet{
+    pub id: String,
+    pub sheet_name: String,
+    pub range: String,
 }
 
 pub fn read_config() -> Result<Config, Box<dyn Error>> {

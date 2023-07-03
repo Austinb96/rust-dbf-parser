@@ -19,7 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if config.upload_to_google_sheets{
-        upload_to_google_sheets(&config.google_sheet_id, &my_records, &config.fields).await?;
+        upload_to_google_sheets(&config.sheet, &my_records, &config.fields).await?;
     }
 
     Ok(())

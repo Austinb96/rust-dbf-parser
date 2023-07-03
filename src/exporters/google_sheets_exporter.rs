@@ -8,16 +8,16 @@ use sheets4::{
     Error
 };
 
-use crate::my_record::MyRecord;
+use crate::{my_record::MyRecord, config::GSheet};
 
 
 type HttpClient = Authenticator<sheets4::hyper_rustls::HttpsConnector<HttpConnector>>;
 
-pub async fn upload_to_google_sheets(sheet_id: &str, records: &Vec<MyRecord>, fields: &Vec<String>) -> Result<(), Error> {
+pub async fn upload_to_google_sheets(sheet: &GSheet, records: &Vec<MyRecord>, fields: &Vec<String>) -> Result<(), Error> {
     let hub = get_hub().await?;
 
-    clear_sheet(&hub, sheet_id).await?;
-    append_sheet(&hub, sheet_id, records, fields).await?;
+    clear_sheet(&hub, &sheet).await?;
+    append_sheet(&hub, &sheet, records, fields).await?;
 
     Ok(())
 }
@@ -56,11 +56,12 @@ async fn get_hub() -> Result<Sheets<hyper_rustls::HttpsConnector<HttpConnector>>
     Ok(hub)
 }
 
-async fn append_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, sheet_id: &str, records: &Vec<MyRecord>, fields: &Vec<String>) -> Result<(), Error> {
+async fn append_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, sheet: &GSheet, records: &Vec<MyRecord>, fields: &Vec<String>) -> Result<(), Error> {
     let req = my_records_to_value_range(records, fields)?;
 
+    let range = format!("{}!{}", sheet.sheet_name, sheet.range);
     let result = hub.spreadsheets()
-        .values_append(req, sheet_id, "Sheet13!A1:D10")
+        .values_append(req, &sheet.id, &range)
         .value_input_option("USER_ENTERED")
         .doit().await;
 
@@ -75,11 +76,12 @@ async fn append_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>,
         },
     }
 }
-async fn clear_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, sheet_id: &str) -> Result<(), Error> {
+async fn clear_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, sheet: &GSheet) -> Result<(), Error> {
     let req = ClearValuesRequest::default();
 
+    let range = format!("{}!{}", sheet.sheet_name, sheet.range);
     let result = hub.spreadsheets()
-        .values_clear(req, sheet_id, "Sheet13!A:Z")
+        .values_clear(req, &sheet.id, &range)
         .doit().await;
 
     match result {
