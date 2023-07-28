@@ -1,5 +1,5 @@
 use google_sheets4 as sheets4;
-use hyper::{client::HttpConnector};
+use hyper::client::HttpConnector;
 use serde_json::json;
 use sheets4::{
     api::{ValueRange, ClearValuesRequest},
@@ -13,11 +13,11 @@ use crate::{my_record::MyRecord, config::GSheet};
 
 type HttpClient = Authenticator<sheets4::hyper_rustls::HttpsConnector<HttpConnector>>;
 
-pub async fn upload_to_google_sheets(sheet: &GSheet, records: &Vec<MyRecord>, fields: &Vec<String>) -> Result<(), Error> {
+pub async fn upload_to_google_sheets(sheet: &GSheet, records: &[MyRecord], fields: &[String]) -> Result<(), Error> {
     let hub = get_hub().await?;
 
-    clear_sheet(&hub, &sheet).await?;
-    append_sheet(&hub, &sheet, records, fields).await?;
+    clear_sheet(&hub, sheet).await?;
+    append_sheet(&hub, sheet, records, fields).await?;
 
     Ok(())
 }
@@ -56,7 +56,7 @@ async fn get_hub() -> Result<Sheets<hyper_rustls::HttpsConnector<HttpConnector>>
     Ok(hub)
 }
 
-async fn append_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, sheet: &GSheet, records: &Vec<MyRecord>, fields: &Vec<String>) -> Result<(), Error> {
+async fn append_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, sheet: &GSheet, records: &[MyRecord], fields: &[String]) -> Result<(), Error> {
     let req = my_records_to_value_range(records, fields)?;
 
     let range = format!("{}!{}", sheet.sheet_name, sheet.range);
@@ -96,12 +96,12 @@ async fn clear_sheet(hub: &Sheets<hyper_rustls::HttpsConnector<HttpConnector>>, 
     }
 }
 
-fn my_records_to_value_range(records: &Vec<MyRecord>, ordered_keys: &[String]) -> Result<ValueRange, Error> {
+fn my_records_to_value_range(records: &[MyRecord], ordered_keys: &[String]) -> Result<ValueRange, Error> {
     let mut values = Vec::new();
     let header: Vec<serde_json::Value> = ordered_keys.iter().map(|key| json!(key.clone())).collect();
     values.push(header);
 
-    let data_rows: Vec<Vec<serde_json::Value>> = records.into_iter().map(|record| {
+    let data_rows: Vec<Vec<serde_json::Value>> = records.iter().map(|record| {
         record.to_values(ordered_keys)
     }).collect();
     values.extend(data_rows);

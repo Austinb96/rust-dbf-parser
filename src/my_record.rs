@@ -31,7 +31,7 @@ impl MyRecord {
 fn get_field(record: &Record, field: &str) -> Result<Option<String>, Box<dyn Error>> {
     match record.get(field) {
         Some(value) => match value {
-            FieldValue::Character(s) => Ok(s.as_ref().map(|s| s.clone())),
+            FieldValue::Character(s) => Ok(s.as_ref().cloned()),
             FieldValue::Numeric(n) => Ok(n.map(|n| n.to_string())),
             _ => Err(format!("Field {} is of an unsupported type", field).into()),
         },
@@ -40,10 +40,10 @@ fn get_field(record: &Record, field: &str) -> Result<Option<String>, Box<dyn Err
 }
 
 
-pub fn get_my_records_from_record(records: Vec<Record>, fields: &Vec<String>) -> Result<Vec<MyRecord>, Box<dyn Error>> {
+pub fn get_my_records_from_record(records: Vec<Record>, fields: &[String]) -> Result<Vec<MyRecord>, Box<dyn Error>> {
     let mut my_records = Vec::new();
     for record in records {
-        let my_record = MyRecord::from_record(record, &fields)?;
+        let my_record = MyRecord::from_record(record, fields)?;
         my_records.push(my_record);
     }
 

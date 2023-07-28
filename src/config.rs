@@ -1,7 +1,6 @@
 use std::fs;
 use std::error::Error;
 use serde_derive::Deserialize;
-use toml;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
