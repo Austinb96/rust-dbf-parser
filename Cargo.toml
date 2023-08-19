@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 csv = "1.2.2"
-dbase = "0.3.0"
+dbase = "0.4.0"
 google-sheets4 = "5.0.2"
 hyper = "0.14.27"
 hyper-rustls = { version = "0.24.0", features = ["http2"] }

@@ -205,9 +205,9 @@ dependencies = [
 
 [[package]]
 name = "dbase"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e3c1a2a9e9238982f599f25b54ec2c7cf1518cc97084cf0c8da475f8a3727fe7"
+checksum = "86bc97a72d9aca92b9a8095b3bfe8f691c54bb15eefaacec53882604062428bf"
 dependencies = [
  "byteorder",
  "time",
